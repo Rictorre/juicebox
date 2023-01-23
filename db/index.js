@@ -1,13 +1,14 @@
 const { Client } = require('pg');
 
-const client = new Client({
-  connectionString: process.env.DATABASE_URL || 'postgres://localhost:5433/juicebox-dev',
-ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
-});
+const connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/juicebox-dev' 
+let config = { connectionString }
 
-module.exports = {
-  client,
-}
+if (process.env.DATABASE_URL) {
+    config.ssl = { rejectUnauthorized: false };
+};
+
+const client = new Client(config);
+
 async function getAllUsers() {
     const { rows } = await client.query(
       `SELECT id, username, name, location, active 
